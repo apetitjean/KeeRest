@@ -29,6 +29,16 @@ function Connect-KeepassDB {
     }
 }
 
+function Lock-KeepassDB {
+	param(
+		[Parameter(Mandatory=$true)]
+		[KeePassLib.PwDatabase]$Database
+	)
+    
+    $Database.Close() | Out-Null
+	
+}
+
 function Get-KeepassEntry {
     param(
       [Parameter(Mandatory=$true)]
