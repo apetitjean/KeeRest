@@ -82,10 +82,14 @@ function Start-KeepassRestService {
     [CmdletBinding()]
     Param (
         [Parameter(Mandatory=$false)]
-        [Int] $Port = 8080
+        [Int] $Port = 8080,
+        [Parameter(Mandatory=$true)]
+        [SecureString] $KDBXPassword,
+        [Parameter(Mandatory=$true)]
+        [String] $KDBX
     )
 
-    $script:db = Connect-KeepassDB -Password (Read-Host 'Enter the password database' -AsSecureString) 
+    $script:db = Connect-KeepassDB -Password $KDBXPassword -DbPath $KDBX
 
     New-PolarisRoute -Method GET -Path '/keepass/title' -Scriptblock {
         $result = Get-KeepassEntry -Database $script:db | ConvertTo-Json 
