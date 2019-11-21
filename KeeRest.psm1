@@ -2,10 +2,10 @@ $ErrorActionPreference = 'Stop'
 function Connect-KeepassDB {
     param(
         [Parameter(Mandatory=$false)]
-        [String]$DbPath = 'C:\Users\Arnaud\Documents\KeePass\Database1.kdbx',
+        [String]$KDBXDatabasePath = 'C:\Users\Arnaud\Documents\KeePass\Database1.kdbx',
   
         [Parameter(Mandatory=$true)]
-        [SecureString]$Password
+        [SecureString]$KDBXPassword
     )
   
     $path = "C:\Program Files (x86)\KeePass Password Safe 2"
@@ -15,10 +15,10 @@ function Connect-KeepassDB {
     try {
         $Kdbx = New-Object KeePassLib.PwDatabase
         $IoConnectionInfo =  New-Object KeePassLib.Serialization.IOConnectionInfo
-        $IoConnectionInfo.Path = $DbPath
+        $IoConnectionInfo.Path = $KDBXDatabasePath
 
         $Key = New-Object KeePassLib.Keys.CompositeKey
-        $bstr = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR($Password)
+        $bstr = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR($KDBXPassword)
         $clearPassword = [System.Runtime.InteropServices.marshal]::PtrToStringBSTR($bstr)
         $Key.AddUserKey(( New-Object KeePassLib.Keys.KcpPassword($clearPassword)))
         $Kdbx.Open($IoConnectionInfo, $Key, $null)
@@ -32,27 +32,27 @@ function Connect-KeepassDB {
 function Lock-KeepassDB {
 	param(
 		[Parameter(Mandatory=$true)]
-		[KeePassLib.PwDatabase]$Database
+		[KeePassLib.PwDatabase]$KDBXDatabase
 	)
     
-    $Database.Close() | Out-Null
+    $KDBXDatabase.Close() | Out-Null
 	
 }
 
 function Get-KeepassEntry {
     param(
       [Parameter(Mandatory=$true)]
-      [KeePassLib.PwDatabase]$Database,
+      [KeePassLib.PwDatabase]$KDBXDatabase,
 
       [Parameter(Mandatory=$false)]
       [String]$FieldFilter = 'Title',
 
       [Parameter(Mandatory=$false)]
-      [String]$EntryTitleFilter
+      [String]$ValueFilter
     )
     
-    $Items = $Database.RootGroup.GetObjects($true,$true) | Where-Object { 
-        $_.Strings.ReadSafe($FieldFilter) -match $EntryTitleFilter
+    $Items = $KDBXDatabase.RootGroup.GetObjects($true,$true) | Where-Object { 
+        $_.Strings.ReadSafe($FieldFilter) -match $ValueFilter
     }
     foreach ($Item in $Items) {
         [PSCustomObject]@{
@@ -99,10 +99,10 @@ function Start-KeepassRestService {
         [Parameter(Mandatory=$true)]
         [SecureString] $KDBXPassword,
         [Parameter(Mandatory=$true)]
-        [String] $KDBX
+        [String] $KDBXDatabase
     )
 
-    $script:db = Connect-KeepassDB -Password $KDBXPassword -DbPath $KDBX
+    $script:db = Connect-KeepassDB -Password $KDBXPassword -DbPath $KDBXDatabase
 
     New-PolarisRoute -Method GET -Path '/keepass/title' -Scriptblock {
         $result = Get-KeepassEntry -Database $script:db | ConvertTo-Json 
