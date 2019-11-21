@@ -45,11 +45,14 @@ function Get-KeepassEntry {
       [KeePassLib.PwDatabase]$Database,
 
       [Parameter(Mandatory=$false)]
+      [String]$FieldFilter = 'Title',
+
+      [Parameter(Mandatory=$false)]
       [String]$EntryTitleFilter
     )
     
     $Items = $Database.RootGroup.GetObjects($true,$true) | Where-Object { 
-        $_.Strings.ReadSafe('Title') -match $EntryTitleFilter
+        $_.Strings.ReadSafe($FieldFilter) -match $EntryTitleFilter
     }
     foreach ($Item in $Items) {
         [PSCustomObject]@{
