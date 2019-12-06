@@ -133,11 +133,11 @@ function Remove-KeeRestEntry{
 		[KeePassLib.PwDatabase]$KDBXDatabase,
 		[Parameter(Mandatory=$true)]
 		[String]$EntryUuid
-	)
-    $Item = $Database.RootGroup.GetObjects($true,$true) | where-object {$_.Uuid.toString() -eq $EntryUuid}
+    )
+    $Item = $KDBXDatabase.RootGroup.GetObjects($true,$true) | where-object {[System.Text.Encoding]::UTF8.GetString($_.Uuid.UuidBytes) -eq $EntryUuid}
     if($Item.ParentGroup.Entries.Remove($Item)){
         $logger = New-Object KeePassLib.Interfaces.NullStatusLogger
-        $Database.save($logger)
+        $KDBXDatabase.save($logger)
     }else{
         Write-error "Error Deleting Entry"
     }
