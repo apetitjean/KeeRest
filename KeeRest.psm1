@@ -96,7 +96,9 @@ function New-KeepassEntry {
         $EntryGroup = @($KDBXDatabase.RootGroup.Groups | Where-Object {$_.name -match $EntryInfos."RexGroup"})[0]
     }
     
+    #Populate Entry info
     $NewEntry = New-Object KeePassLib.PwEntry($EntryGroup, $true, $true)
+
     $NewEntry.Strings.Set("Title", (ConvertTo-KPProtectedString $EntryInfos."Title"))
     if($EntryInfos."UserName" -and $EntryInfos."UserName" -ne ""){
         $NewEntry.Strings.Set("UserName",(ConvertTo-KPProtectedString $EntryInfos."UserName"))
