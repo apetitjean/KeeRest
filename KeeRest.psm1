@@ -65,6 +65,79 @@ function Get-KeepassEntry {
     }    	 
 }
 
+function ConvertTo-KPProtectedString{
+	param(
+		[Parameter(Mandatory=$true)]
+		[AllowEmptyString()]
+		[String]$str
+	)
+	Begin{		}
+	Process{
+		return New-Object KeePassLib.security.ProtectedString($true,$str)
+	}
+	End{	}
+}
+
+
+
+function New-KeepassEntry {
+    param(
+      [Parameter(Mandatory=$true)]
+      [KeePassLib.PwDatabase]$KDBXDatabase,
+
+      [Parameter(Mandatory=$true)]
+		[hashtable]$EntryInfos 
+	)
+    
+    $EntryGroup = $Database.RootGroup
+    if($EntryInfos."RexGroup"){
+        $EntryGroup = @($Database.RootGroup.Groups | Where-Object {$_.name -match $EntryInfos."RexGroup"})[0]
+    }
+    
+    $NewEntry = New-Object KeePassLib.PwEntry($EntryGroup, $true, $true)
+    $NewEntry.Strings.Set("Title", (ConvertTo-KPProtectedString $EntryInfos."Title"))
+    if($EntryInfos."UserName" -and $EntryInfos."UserName" -ne ""){
+        $NewEntry.Strings.Set("UserName",(ConvertTo-KPProtectedString $EntryInfos."UserName"))
+    }
+    if($EntryInfos."Password" -and $EntryInfos."Password" -ne ""){
+        $pwd = $EntryInfos."Password"
+    }else{
+        $pwd = Get-SecurityRandomString -length 32
+    }
+    $NewEntry.Strings.Set("Password",(ConvertTo-KPProtectedString $pwd))
+
+    if($EntryInfos."URL" -and $EntryInfos."URL" -ne ""){$NewEntry.Strings.Set("URL",(ConvertTo-KPProtectedString $EntryInfos."URL"))}
+    if($EntryInfos."Note" -and $EntryInfos."Note" -ne ""){$NewEntry.Strings.Set("Note",(ConvertTo-KPProtectedString $EntryInfos."Note"))}
+	if($EntryInfos."TAGS" -and $EntryInfos."TAGS" -ne ""){
+		foreach($t in @($EntryInfos."TAGS").split(",")){
+            $EntryInfos.Tags.Add($t)
+        }
+    	
+    }
+
+    $NewEntry.AddEntry($EntryInfos, $true)
+    
+    $logger = New-Object KeePassLib.Interfaces.NullStatusLogger
+    $Database.save($logger)
+        	 
+}
+
+function Remove-KeeRestEntry{
+	param(
+		[Parameter(Mandatory=$true)]
+		[KeePassLib.PwDatabase]$KDBXDatabase,
+		[Parameter(Mandatory=$true)]
+		[String]$EntryUuid
+	)
+    $Item = $Database.RootGroup.GetObjects($true,$true) | where-object {$_.Uuid.toString() -eq $EntryUuid}
+    if($Item.ParentGroup.Entries.Remove($Item)){
+        $logger = New-Object KeePassLib.Interfaces.NullStatusLogger
+        $Database.save($logger)
+    }else{
+        Write-error "Error Deleting Entry"
+    }
+}
+
 function Start-KeepassRandomGenerator {
     [CmdletBinding()]
     Param (
