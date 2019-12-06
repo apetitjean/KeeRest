@@ -48,7 +48,7 @@ function Get-KeepassEntry {
       [String]$FieldFilter = 'Title',
 
       [Parameter(Mandatory=$false)]
-      [String]$ValueFilter
+      [String]$ValueFilter = '*'
     )
     
     $Items = $KDBXDatabase.RootGroup.GetObjects($true,$true) | Where-Object { 
