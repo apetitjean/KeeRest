@@ -111,18 +111,18 @@ function New-KeepassEntry {
     $NewEntry.Strings.Set("Password",(ConvertTo-KPProtectedString $pwd))
 
     if($EntryInfos."URL" -and $EntryInfos."URL" -ne ""){$NewEntry.Strings.Set("URL",(ConvertTo-KPProtectedString $EntryInfos."URL"))}
-    if($EntryInfos."Note" -and $EntryInfos."Note" -ne ""){$NewEntry.Strings.Set("Note",(ConvertTo-KPProtectedString $EntryInfos."Note"))}
+    if($EntryInfos."Notes" -and $EntryInfos."Notes" -ne ""){$NewEntry.Strings.Set("Notes",(ConvertTo-KPProtectedString $EntryInfos."Notes"))}
 	if($EntryInfos."TAGS" -and $EntryInfos."TAGS" -ne ""){
 		foreach($t in @($EntryInfos."TAGS").split(",")){
-            $EntryInfos.Tags.Add($t)
+            $NewEntry.Tags.Add($t)
         }
     	
     }
 
-    $NewEntry.AddEntry($EntryInfos, $true)
-    
+    $EntryGroup.AddEntry($NewEntry, $true)
+
     $logger = New-Object KeePassLib.Interfaces.NullStatusLogger
-    $Database.save($logger)
+    $KDBXDatabase.save($logger)
         	 
 }
 
