@@ -80,8 +80,6 @@ function ConvertTo-KPProtectedString{
 	End{	}
 }
 
-
-
 function New-KeepassEntry {
     param(
       [Parameter(Mandatory=$true)]
