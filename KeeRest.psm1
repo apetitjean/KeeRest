@@ -121,6 +121,7 @@ function New-KeepassEntry {
 
     $EntryGroup.AddEntry($NewEntry, $true)
 
+    # Saving Entry
     $logger = New-Object KeePassLib.Interfaces.NullStatusLogger
     $KDBXDatabase.save($logger)
         	 
