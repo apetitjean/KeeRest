@@ -61,6 +61,7 @@ function Get-KeepassEntry {
             Password             = $Item.Strings.ReadSafe("Password")
             Tags                 = $Item.Tags
             LastModificationTime = $Item.LastModificationTime
+            Uuid                 = $Item.Uuid
             }
     }    	 
 }
