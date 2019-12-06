@@ -60,6 +60,7 @@ function Get-KeepassEntry {
             UserName             = $Item.Strings.ReadSafe("UserName")
             Password             = $Item.Strings.ReadSafe("Password")
             Tags                 = $Item.Tags
+            URL                  = $Item.Strings.ReadSafe("URL")
             LastModificationTime = $Item.LastModificationTime
             Uuid                 = $Item.Uuid
             }
