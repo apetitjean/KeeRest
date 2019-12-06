@@ -63,8 +63,10 @@ Describe 'New-KeepassEntry and Remove-KeepassEntry' {
         Lock-KeepassDB -KDBXDatabase $DBObj
         $DBObj = Connect-KeepassDB -KDBXDatabasePath "$PSScriptRoot\Tests\TestDatabase.kdbx" -KDBXPassword (ConvertTo-SecureString "KeeRest_Rocks!" -AsPlainText -Force)
         $DeletedEntry = Get-KeepassEntry -KDBXDatabase $DBObj -FieldFilter 'UserName' -ValueFilter "Pester"
-        it 'returns multiple entries correctly' {
+        it 'Delete an entry correctly' {
             $DeletedEntry | should Be $null
         }
+        Lock-KeepassDB -KDBXDatabase $DBObj
     }
+    
 }
