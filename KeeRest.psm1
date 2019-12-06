@@ -92,7 +92,8 @@ function New-KeepassEntry {
     # Default to root group the new entry
     $EntryGroup = $KDBXDatabase.RootGroup 
     if($EntryInfos."RexGroup"){
-        $EntryGroup = @($Database.RootGroup.Groups | Where-Object {$_.name -match $EntryInfos."RexGroup"})[0]
+         "else first group matching"
+        $EntryGroup = @($KDBXDatabase.RootGroup.Groups | Where-Object {$_.name -match $EntryInfos."RexGroup"})[0]
     }
     
     $NewEntry = New-Object KeePassLib.PwEntry($EntryGroup, $true, $true)
