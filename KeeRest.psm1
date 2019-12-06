@@ -62,8 +62,8 @@ function Get-KeepassEntry {
             Tags                 = $Item.Tags
             URL                  = $Item.Strings.ReadSafe("URL")
             LastModificationTime = $Item.LastModificationTime
-            Uuid                 = $Item.Uuid
-            }
+            Uuid                 = [System.Text.Encoding]::UTF8.GetString($Item.Uuid.UuidBytes)
+        }
     }    	 
 }
 
